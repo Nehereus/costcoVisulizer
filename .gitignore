@@ -4,3 +4,6 @@ items_bought.csv
 Jan09.json
 price_history.csv
 .DS_Store
+*json
+*csv
+*numbers

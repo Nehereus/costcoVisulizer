@@ -114,7 +114,7 @@ const Query = (function() {
                     membershipNumber
                 }
             }
-        }","variables":{"startDate":"1/01/2024","endDate":"12/31/2024","documentType":"all","documentSubType":"all"}}`
+        }","variables":{"startDate":"1/01/2019","endDate":"12/31/2026","documentType":"all","documentSubType":"all"}}`
     };
 
     const getOnlineOrders = {
@@ -195,7 +195,7 @@ const Query = (function() {
                 }
               }
             }
-        }","variables":{"pageNumber":1,"pageSize":10,"startDate":"2024-1-01","endDate":"2024-12-31","warehouseNumber":"894"}}`
+        }","variables":{"pageNumber":1,"pageSize":10,"startDate":"2019-1-01","endDate":"2026-12-31","warehouseNumber":"894"}}`
     };
 
     const getOrderDetails = {
