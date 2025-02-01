@@ -7,3 +7,5 @@ price_history.csv
 *json
 *csv
 *numbers
+.env
+node_modules

@@ -1,6 +1,7 @@
 //////////////////////
 // QUERIES
 //////////////////////
+require('dotenv').config();
 const Query = (function() {
     const receiptsWithCounts = {
       name: 'receiptsWithCounts',
@@ -427,13 +428,15 @@ const Query = (function() {
 //////////////////////
 // XHR
 //////////////////////
+idToken = process.env.ID_TOKEN;//localStorage.idToken;
+clientID = process.env.CLIENT_ID;//localStorage.clientID;
 const queryCostcoOrders = (query) => fetch("https://ecom-api.costco.com/ebusiness/order/v1/orders/graphql", {
   "headers": {
     "accept": "*/*",
     "client-identifier": "481b1aec-aa3b-454b-b81b-48187e28f205",
     "content-type": "application/json-patch+json",
-    "costco-x-authorization": `Bearer ${localStorage.idToken}`,
-    "costco-x-wcs-clientid": localStorage.clientID,
+    "costco-x-authorization": `Bearer ${idToken}`,
+    "costco-x-wcs-clientid": clientID,
     "costco.env": "ecom",
     "costco.service": "restOrders",
   },
@@ -444,38 +447,57 @@ const queryCostcoOrders = (query) => fetch("https://ecom-api.costco.com/ebusines
   "mode": "cors",
   "credentials": "omit"
 })
-    .then(r => r.json())
-    .then(json => json.data[query.name]);
+  .then(r => r.json())
+  .then(json => {
+      if (!json.data) { // Check for errors in the response
+          throw new Error("No data returned from the API. Check your query and Costco credentials.  Full response: " + JSON.stringify(json));
+      }
+      return json.data[query.name];
+  })
+  .catch(error => {
+      console.error("Error in queryCostcoOrders:", error);
+      throw error; // Re-throw the error to be caught by the caller
+  });
 
+
+queryFunctions = {};
 // create functions for each query
 Object.keys(Query)
   .forEach(queryName => 
-    window[queryName] = () => queryCostcoOrders(Query[queryName]));
+    queryFunctions[queryName] = () => queryCostcoOrders(Query[queryName]));
 
 //////////////////////
 // PARSING
 //////////////////////
-let receiptsJson = await receiptsWithCounts();
-let receipts = receiptsJson.receipts;
-let items = receipts
-    .flatMap(receipt => receipt.itemArray)
-    .map(({fuelUnitQuantity, unit, ...item}) => 
-        (item.unit = item.fuelUomCode ? fuelUnitQuantity : unit, 
-         item));
+(async () => {  // The IIFE
+  try {
+      let receiptsJson = await queryFunctions.receiptsWithCounts();
+      let result = JSON.stringify(receiptsJson, null, 2);
+      console.log(result);
+  } catch (error) {
+      console.error("Error:", error);
+  }
+})();
+// let receipts = receiptsJson.receipts;
+// let items = receipts
+//     .flatMap(receipt => receipt.itemArray)
+//     .map(({fuelUnitQuantity, unit, ...item}) => 
+//         (item.unit = item.fuelUomCode ? fuelUnitQuantity : unit, 
+//          item));
 
-//////////////////////
-// UTILITY FUNCTIONS
-//////////////////////
-const logReceiptItems = () => 
-    console.table(items);
+// //////////////////////
+// // UTILITY FUNCTIONS
+// //////////////////////
+// const logReceiptItems = () => 
+//     console.table(items);
 
-const getReceiptsTotal = () =>
-    receipts.reduce((sum, {total}) => sum += total, 0);
+// const getReceiptsTotal = () =>
+//     receipts.reduce((sum, {total}) => sum += total, 0);
 
-//////////////////////
-// SUMMARY
-//////////////////////
-console.log(`Supported query functions: ${Object.keys(Query).join(', ')}`);
-console.log(`Loaded ${receipts.length} receipts with ${items.length} items`);
+// //////////////////////
+// // SUMMARY
+// //////////////////////
+// console.log(`Supported query functions: ${Object.keys(Query).join(', ')}`);
+// console.log(`Loaded ${receipts.length} receipts with ${items.length} items`);
 
 
