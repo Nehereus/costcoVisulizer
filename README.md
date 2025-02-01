@@ -4,6 +4,8 @@ Pretty much as the name suggests, this is a tiny hobby project to have a view on
 <img width="267" alt="Screenshot 2025-02-01 at 2 22 00 PM" src="https://github.com/user-attachments/assets/527c9931-334a-4c36-9c44-e62484066e4d" />
 <img width="300" alt="image" src="https://github.com/user-attachments/assets/f9542a82-c8bb-4131-b68e-53b4a56d9646" />
 
+* For privacy reason, the zip code of the warehouse along with the precise timestmap are redacted from the screenshots. 
+
 
 ## how to use 
 ### receiptDownloader.js
